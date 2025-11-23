@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     # API Keys
     OPENAI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
 
     # Database
     DATABASE_URL: str = "sqlite:///./ai_explainer.db"
@@ -35,7 +36,7 @@ class Settings(BaseSettings):
     # Application
     ENVIRONMENT: str = "development"
     API_VERSION: str = "v1"
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "chrome-extension://*"]
+    CORS_ORIGINS: List[str] = ["http://localhost:4200", "chrome-extension://*"]
 
     # AI Model Settings
     DEFAULT_AI_MODEL: str = "gpt-4-turbo-preview"

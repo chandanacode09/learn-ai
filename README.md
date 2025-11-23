@@ -80,7 +80,10 @@ See **[QUICKSTART.md](QUICKSTART.md)** for the fastest way to get started.
 
 - Python 3.9+
 - Node.js 18+
-- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- AI API key (choose one):
+  - **Gemini** (FREE!): [Get here](https://aistudio.google.com/app/apikey) ⭐ Recommended
+  - OpenAI: [Get here](https://platform.openai.com/api-keys)
+  - Anthropic: [Get here](https://console.anthropic.com/)
 
 ### Installation
 
@@ -154,7 +157,7 @@ curl -X POST http://localhost:8000/api/v1/explanation/explain \
 | Component | Technology |
 |-----------|------------|
 | Backend API | FastAPI, Python |
-| AI Models | OpenAI GPT-4, Anthropic Claude |
+| AI Models | Google Gemini (FREE!), OpenAI GPT-4, Anthropic Claude |
 | Frontend | Angular 17, TypeScript, RxJS |
 | Styling | TailwindCSS |
 | Database | SQLite (dev), PostgreSQL (prod) |

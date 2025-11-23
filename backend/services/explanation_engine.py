@@ -3,6 +3,7 @@ AI Explanation Engine - Core service for generating multi-level explanations
 """
 import openai
 from anthropic import Anthropic
+import google.generativeai as genai
 from typing import Dict, List, Optional
 import json
 from datetime import datetime
@@ -17,6 +18,13 @@ from models.schemas import (
 # Initialize AI clients
 openai.api_key = settings.OPENAI_API_KEY
 anthropic_client = Anthropic(api_key=settings.ANTHROPIC_API_KEY) if settings.ANTHROPIC_API_KEY else None
+
+# Initialize Gemini
+if settings.GEMINI_API_KEY:
+    genai.configure(api_key=settings.GEMINI_API_KEY)
+    gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+else:
+    gemini_model = None
 
 
 class ExplanationEngine:
@@ -44,8 +52,15 @@ class ExplanationEngine:
             include_examples, include_prerequisites
         )
 
-        # Generate explanation using AI
-        response = await self._generate_with_openai(prompt)
+        # Generate explanation using AI (try in order: Gemini -> OpenAI -> Anthropic)
+        if settings.GEMINI_API_KEY and gemini_model:
+            response = await self._generate_with_gemini(prompt)
+        elif settings.OPENAI_API_KEY:
+            response = await self._generate_with_openai(prompt)
+        elif settings.ANTHROPIC_API_KEY:
+            response = await self._generate_with_anthropic(prompt)
+        else:
+            raise ValueError("No AI API key configured")
 
         # Parse and structure the response
         explanation = self._parse_response(
@@ -146,6 +161,52 @@ Please provide your explanation in the following JSON format:
         except Exception as e:
             print(f"OpenAI API error: {e}")
             # Fallback to a simpler explanation
+            return self._generate_fallback_response()
+
+    async def _generate_with_gemini(self, prompt: str) -> str:
+        """Generate response using Google Gemini"""
+        try:
+            # Gemini requires JSON mode to be specified in prompt
+            json_prompt = f"{prompt}\n\nIMPORTANT: Respond ONLY with valid JSON. No markdown, no code blocks, just raw JSON."
+
+            response = gemini_model.generate_content(
+                json_prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=settings.TEMPERATURE,
+                    max_output_tokens=settings.MAX_TOKENS,
+                )
+            )
+
+            # Extract text and clean it
+            text = response.text
+
+            # Remove markdown code blocks if present
+            if text.startswith("```json"):
+                text = text[7:]  # Remove ```json
+            if text.startswith("```"):
+                text = text[3:]  # Remove ```
+            if text.endswith("```"):
+                text = text[:-3]  # Remove ```
+
+            return text.strip()
+        except Exception as e:
+            print(f"Gemini API error: {e}")
+            return self._generate_fallback_response()
+
+    async def _generate_with_anthropic(self, prompt: str) -> str:
+        """Generate response using Anthropic Claude"""
+        try:
+            message = anthropic_client.messages.create(
+                model="claude-3-sonnet-20240229",
+                max_tokens=settings.MAX_TOKENS,
+                temperature=settings.TEMPERATURE,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+            return message.content[0].text
+        except Exception as e:
+            print(f"Anthropic API error: {e}")
             return self._generate_fallback_response()
 
     def _generate_fallback_response(self) -> str:

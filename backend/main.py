@@ -18,13 +18,16 @@ async def lifespan(app: FastAPI):
     print("🚀 Starting AI Content Explainer API...")
 
     # Validate API keys
-    if not settings.OPENAI_API_KEY and not settings.ANTHROPIC_API_KEY:
+    if not settings.OPENAI_API_KEY and not settings.ANTHROPIC_API_KEY and not settings.GEMINI_API_KEY:
         print("❌ ERROR: No AI API keys configured!")
-        print("Please set either OPENAI_API_KEY or ANTHROPIC_API_KEY in your .env file")
+        print("Please set one of: OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY in your .env file")
         print("Get your OpenAI key from: https://platform.openai.com/api-keys")
         print("Get your Anthropic key from: https://console.anthropic.com/")
-        raise RuntimeError("No AI API keys configured. Please add OPENAI_API_KEY or ANTHROPIC_API_KEY to .env file")
+        print("Get your Gemini key from: https://aistudio.google.com/app/apikey")
+        raise RuntimeError("No AI API keys configured. Please add at least one AI provider key to .env file")
 
+    if settings.GEMINI_API_KEY:
+        print(f"✅ Google Gemini API key configured ({settings.GEMINI_API_KEY[:10]}...)")
     if settings.OPENAI_API_KEY:
         print(f"✅ OpenAI API key configured ({settings.OPENAI_API_KEY[:10]}...)")
     if settings.ANTHROPIC_API_KEY:
