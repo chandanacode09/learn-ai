@@ -1,27 +1,23 @@
-/**
- * TypeScript type definitions
- */
-
 export enum ExplanationLevel {
-  ELI5 = "eli5",
-  BEGINNER = "beginner",
-  INTERMEDIATE = "intermediate",
-  ADVANCED = "advanced",
-  EXPERT = "expert",
+  ELI5 = 'eli5',
+  BEGINNER = 'beginner',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced',
+  EXPERT = 'expert'
 }
 
 export enum ExplanationMode {
-  PERSONAL = "personal",
-  EDUCATIONAL = "educational",
-  PROFESSIONAL = "professional",
+  PERSONAL = 'personal',
+  EDUCATIONAL = 'educational',
+  PROFESSIONAL = 'professional'
 }
 
 export enum ContentType {
-  ARTICLE = "article",
-  GITHUB_REPO = "github_repo",
-  PDF = "pdf",
-  DOCUMENTATION = "documentation",
-  CODE_SNIPPET = "code_snippet",
+  ARTICLE = 'article',
+  GITHUB_REPO = 'github_repo',
+  PDF = 'pdf',
+  DOCUMENTATION = 'documentation',
+  CODE_SNIPPET = 'code_snippet'
 }
 
 export interface ConceptExtraction {

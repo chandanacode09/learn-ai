@@ -1,0 +1,150 @@
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+  <!-- Header -->
+  <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+    <div class="flex items-start justify-between">
+      <div class="flex-1">
+        <h2 class="text-2xl font-bold mb-2">
+          {{ explanation.original_title || 'Explanation' }}
+        </h2>
+        <p class="text-blue-100">
+          {{ formatReadTime(explanation.estimated_read_time) }} •
+          {{ explanation.level.toUpperCase() }} Level •
+          {{ explanation.mode }} Mode
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <button
+          class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+          title="Export">
+          📥
+        </button>
+        <button
+          class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+          title="Share">
+          🔗
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="border-b border-gray-200">
+    <div class="flex">
+      <button
+        (click)="activeTab = 'summary'"
+        [class]="activeTab === 'summary' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'"
+        class="px-6 py-3 font-medium transition-colors">
+        Summary
+      </button>
+      <button
+        (click)="activeTab = 'detailed'"
+        [class]="activeTab === 'detailed' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'"
+        class="px-6 py-3 font-medium transition-colors">
+        Detailed Explanation
+      </button>
+      <button
+        (click)="activeTab = 'concepts'"
+        [class]="activeTab === 'concepts' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:text-gray-900'"
+        class="px-6 py-3 font-medium transition-colors">
+        Concepts & More
+      </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="p-6">
+    <!-- Summary Tab -->
+    <div *ngIf="activeTab === 'summary'" class="space-y-6">
+      <!-- Instant Insight -->
+      <div class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded">
+        <h3 class="font-semibold text-blue-900 mb-2">💡 Instant Insight</h3>
+        <p class="text-lg text-blue-800">{{ explanation.summary }}</p>
+      </div>
+
+      <!-- Key Takeaways -->
+      <div>
+        <h3 class="font-semibold text-lg mb-3">🎯 Key Takeaways</h3>
+        <ul class="space-y-2">
+          <li *ngFor="let takeaway of explanation.key_takeaways"
+              class="flex items-start gap-2 bg-gray-50 p-3 rounded">
+            <span class="text-blue-600 font-bold">•</span>
+            <span>{{ takeaway }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Examples -->
+      <div *ngIf="explanation.examples.length > 0">
+        <h3 class="font-semibold text-lg mb-3">📝 Examples</h3>
+        <div class="space-y-3">
+          <div *ngFor="let example of explanation.examples"
+               class="bg-green-50 p-4 rounded border-l-4 border-green-600">
+            <p>{{ example }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detailed Tab -->
+    <div *ngIf="activeTab === 'detailed'" class="prose max-w-none">
+      <div [innerHTML]="renderMarkdown(explanation.detailed_explanation)"></div>
+    </div>
+
+    <!-- Concepts Tab -->
+    <div *ngIf="activeTab === 'concepts'" class="space-y-6">
+      <!-- Prerequisites -->
+      <div *ngIf="explanation.prerequisites.length > 0">
+        <h3 class="font-semibold text-lg mb-3">📚 Prerequisites</h3>
+        <div class="flex flex-wrap gap-2">
+          <span *ngFor="let prereq of explanation.prerequisites"
+                class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+            {{ prereq }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Concepts -->
+      <div *ngIf="explanation.concepts.length > 0">
+        <h3 class="font-semibold text-lg mb-3">🧩 Key Concepts</h3>
+        <div class="grid gap-4">
+          <div *ngFor="let concept of explanation.concepts"
+               class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-start justify-between mb-2">
+              <h4 class="font-semibold text-lg">{{ concept.name }}</h4>
+              <span [class]="getDifficultyClass(concept.difficulty)"
+                    class="text-xs px-2 py-1 rounded">
+                {{ concept.difficulty }}
+              </span>
+            </div>
+            <p class="text-gray-700 mb-3">{{ concept.description }}</p>
+            <div *ngIf="concept.prerequisites.length > 0">
+              <p class="text-sm text-gray-600 mb-1">Prerequisites:</p>
+              <div class="flex flex-wrap gap-1">
+                <span *ngFor="let prereq of concept.prerequisites"
+                      class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                  {{ prereq }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Aids -->
+      <div *ngIf="explanation.visual_aids.length > 0">
+        <h3 class="font-semibold text-lg mb-3">📊 Visual Aids</h3>
+        <div class="space-y-4">
+          <div *ngFor="let visual of explanation.visual_aids"
+               class="bg-gray-50 p-4 rounded-lg">
+            <h4 class="font-medium mb-2">{{ visual.type }}</h4>
+            <p class="text-gray-700 text-sm mb-3">{{ visual.description }}</p>
+            <div *ngIf="visual.mermaid_code"
+                 class="bg-white p-4 rounded border border-gray-200 overflow-x-auto">
+              <pre class="text-sm"><code>{{ visual.mermaid_code }}</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

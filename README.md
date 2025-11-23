@@ -37,9 +37,9 @@ Transform any technical article, GitHub repository, or documentation into person
 cd backend && uvicorn main:app --reload
 
 # 2. Start frontend
-cd frontend && npm run dev
+cd frontend && npm start
 
-# 3. Open http://localhost:3000 and click "Try Example"
+# 3. Open http://localhost:4200 and click "Try Example"
 ```
 
 ## 📖 Documentation
@@ -61,10 +61,10 @@ learn-ai/
 │   │   └── content_ingestion.py     # Content extraction
 │   └── api/routes/      # API endpoints
 │
-├── frontend/            # Next.js web application
-│   ├── app/            # Pages and layouts
-│   ├── components/     # React components
-│   └── lib/            # API client and utilities
+├── frontend/            # Angular web application
+│   ├── app/            # Components and services
+│   ├── src/            # Source files
+│   └── angular.json    # Angular configuration
 │
 └── extension/          # Chrome extension
     ├── manifest.json   # Extension config
@@ -108,7 +108,7 @@ uvicorn main:app --reload
 ```bash
 cd frontend
 npm install
-npm run dev
+npm start
 ```
 
 4. **Install Chrome Extension**
@@ -121,7 +121,7 @@ npm run dev
 ### Web App
 
 ```
-1. Open http://localhost:3000
+1. Open http://localhost:4200
 2. Paste a URL or article text
 3. Select explanation level (ELI5 to Expert)
 4. Choose mode (Personal, Educational, Professional)
@@ -155,8 +155,8 @@ curl -X POST http://localhost:8000/api/v1/explanation/explain \
 |-----------|------------|
 | Backend API | FastAPI, Python |
 | AI Models | OpenAI GPT-4, Anthropic Claude |
-| Frontend | Next.js 14, React, TypeScript |
-| Styling | TailwindCSS, shadcn/ui |
+| Frontend | Angular 17, TypeScript, RxJS |
+| Styling | TailwindCSS |
 | Database | SQLite (dev), PostgreSQL (prod) |
 | Vector DB | Pinecone / ChromaDB (future) |
 | Extension | Chrome Extension Manifest V3 |
@@ -242,9 +242,9 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 - OpenAI for GPT models
 - Anthropic for Claude
-- Next.js team for the amazing framework
+- Angular team for the powerful framework
 - FastAPI for the excellent backend framework
-- shadcn for beautiful UI components
+- TailwindCSS for beautiful styling
 
 ## 📧 Support
 

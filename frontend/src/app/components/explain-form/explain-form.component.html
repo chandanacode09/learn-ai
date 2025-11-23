@@ -1,0 +1,126 @@
+<div class="bg-white rounded-lg shadow-lg p-6">
+  <form (ngSubmit)="onSubmit()" class="space-y-6">
+    <!-- Input Type Selector -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        Input Type
+      </label>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          (click)="inputType = 'url'"
+          [class]="inputType === 'url' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          class="px-4 py-2 rounded-lg">
+          URL
+        </button>
+        <button
+          type="button"
+          (click)="inputType = 'text'"
+          [class]="inputType === 'text' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          class="px-4 py-2 rounded-lg">
+          Text
+        </button>
+        <button
+          type="button"
+          (click)="inputType = 'github'"
+          [class]="inputType === 'github' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+          class="px-4 py-2 rounded-lg">
+          GitHub
+        </button>
+      </div>
+    </div>
+
+    <!-- Input Field -->
+    <div>
+      <div *ngIf="inputType === 'url'">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Article URL
+        </label>
+        <input
+          type="url"
+          [(ngModel)]="url"
+          name="url"
+          placeholder="https://example.com/article"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+
+      <div *ngIf="inputType === 'text'">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Text Content
+        </label>
+        <textarea
+          [(ngModel)]="text"
+          name="text"
+          placeholder="Paste your content here..."
+          rows="6"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </textarea>
+      </div>
+
+      <div *ngIf="inputType === 'github'">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          GitHub Repository
+        </label>
+        <input
+          type="text"
+          [(ngModel)]="githubRepo"
+          name="githubRepo"
+          placeholder="owner/repository or full URL"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
+    </div>
+
+    <!-- Explanation Level -->
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Explanation Level
+        </label>
+        <select
+          [(ngModel)]="level"
+          name="level"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option [value]="ExplanationLevel.ELI5">ELI5 (Explain Like I'm 5)</option>
+          <option [value]="ExplanationLevel.BEGINNER">Beginner</option>
+          <option [value]="ExplanationLevel.INTERMEDIATE">Intermediate</option>
+          <option [value]="ExplanationLevel.ADVANCED">Advanced</option>
+          <option [value]="ExplanationLevel.EXPERT">Expert</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Mode
+        </label>
+        <select
+          [(ngModel)]="mode"
+          name="mode"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option [value]="ExplanationMode.PERSONAL">Personal (Quick & Friendly)</option>
+          <option [value]="ExplanationMode.EDUCATIONAL">Educational (Detailed)</option>
+          <option [value]="ExplanationMode.PROFESSIONAL">Professional (Actionable)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+      {{ error }}
+    </div>
+
+    <!-- Submit Buttons -->
+    <div class="flex gap-3">
+      <button
+        type="submit"
+        class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+        Explain Content
+      </button>
+      <button
+        type="button"
+        (click)="tryExample()"
+        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+        Try Example
+      </button>
+    </div>
+  </form>
+</div>

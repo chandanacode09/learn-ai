@@ -16,8 +16,27 @@ async def lifespan(app: FastAPI):
     """Application lifespan handler"""
     # Startup
     print("🚀 Starting AI Content Explainer API...")
+
+    # Validate API keys
+    if not settings.OPENAI_API_KEY and not settings.ANTHROPIC_API_KEY:
+        print("❌ ERROR: No AI API keys configured!")
+        print("Please set either OPENAI_API_KEY or ANTHROPIC_API_KEY in your .env file")
+        print("Get your OpenAI key from: https://platform.openai.com/api-keys")
+        print("Get your Anthropic key from: https://console.anthropic.com/")
+        raise RuntimeError("No AI API keys configured. Please add OPENAI_API_KEY or ANTHROPIC_API_KEY to .env file")
+
+    if settings.OPENAI_API_KEY:
+        print(f"✅ OpenAI API key configured ({settings.OPENAI_API_KEY[:10]}...)")
+    if settings.ANTHROPIC_API_KEY:
+        print(f"✅ Anthropic API key configured ({settings.ANTHROPIC_API_KEY[:10]}...)")
+
     await init_db()
     print("✅ Database initialized")
+    print("✅ Caching enabled (24 hour TTL)")
+    print(f"✅ Rate limiting: 10 requests/hour for free tier")
+    print(f"✅ CORS origins: {settings.CORS_ORIGINS}")
+    print(f"\n🌐 API running at http://localhost:8000")
+    print(f"📖 API docs at http://localhost:8000/docs\n")
 
     yield
 

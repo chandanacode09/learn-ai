@@ -1,0 +1,49 @@
+/* Markdown prose styles */
+:host ::ng-deep .prose {
+  color: #374151;
+  max-width: 65ch;
+}
+
+:host ::ng-deep .prose h1,
+:host ::ng-deep .prose h2,
+:host ::ng-deep .prose h3 {
+  color: #111827;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+:host ::ng-deep .prose p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  line-height: 1.75;
+}
+
+:host ::ng-deep .prose ul,
+:host ::ng-deep .prose ol {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+:host ::ng-deep .prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+:host ::ng-deep .prose code {
+  background-color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+:host ::ng-deep .prose pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1em;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}

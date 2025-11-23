@@ -1,7 +1,7 @@
 """
 Explanation API endpoints
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import Optional
 
 from models.schemas import (
@@ -10,42 +10,55 @@ from models.schemas import (
 )
 from services.explanation_engine import explanation_engine
 from services.content_ingestion import content_service
+from services.cache_service import cache_service
+from services.rate_limiter import rate_limiter
 
 router = APIRouter()
 
 
 @router.post("/explain", response_model=ExplanationResponse)
-async def explain_content(request: ExplainContentRequest):
+async def explain_content(request_data: ExplainContentRequest, request: Request):
     """
     Generate explanation for content
     Supports URLs, GitHub repos, PDFs, or direct text
+    Includes caching and rate limiting
     """
+    # Rate limiting check
+    client_ip = request.client.host if request.client else "unknown"
+    is_allowed, remaining = rate_limiter.is_allowed(client_ip)
+
+    if not is_allowed:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Rate limit exceeded. Maximum {rate_limiter.requests_per_window} requests per {rate_limiter.window_minutes} minutes."
+        )
+
     try:
         # Determine content source and ingest
         content = None
         content_type = ContentType.ARTICLE
 
-        if request.url:
+        if request_data.url:
             # Ingest from URL
-            result = await content_service.ingest_url(str(request.url))
+            result = await content_service.ingest_url(str(request_data.url))
             content = result['content']
             content_type = result['metadata']['content_type']
 
-        elif request.github_repo:
+        elif request_data.github_repo:
             # Ingest GitHub repository
-            result = await content_service.ingest_github_repo(request.github_repo)
+            result = await content_service.ingest_github_repo(request_data.github_repo)
             content = result['content']
             content_type = ContentType.GITHUB_REPO
 
-        elif request.pdf_path:
+        elif request_data.pdf_path:
             # Ingest PDF
-            result = await content_service.ingest_pdf(request.pdf_path)
+            result = await content_service.ingest_pdf(request_data.pdf_path)
             content = result['content']
             content_type = ContentType.PDF
 
-        elif request.content:
+        elif request_data.content:
             # Use provided content directly
-            content = request.content
+            content = request_data.content
             content_type = ContentType.CODE_SNIPPET
 
         else:
@@ -61,15 +74,34 @@ async def explain_content(request: ExplainContentRequest):
                 detail="Content is too short or empty"
             )
 
-        # Generate explanation
+        # Check cache first
+        cached_response = cache_service.get(
+            content=content[:1000],  # Use first 1000 chars for cache key
+            level=request_data.level.value,
+            mode=request_data.mode.value
+        )
+
+        if cached_response:
+            print(f"✅ Cache hit! Saved API call for {client_ip}")
+            return ExplanationResponse(**cached_response)
+
+        # Generate explanation (cache miss)
         explanation = await explanation_engine.explain(
             content=content,
-            level=request.level,
-            mode=request.mode,
+            level=request_data.level,
+            mode=request_data.mode,
             content_type=content_type,
-            generate_visuals=request.generate_visuals,
-            include_examples=request.include_examples,
-            include_prerequisites=request.include_prerequisites
+            generate_visuals=request_data.generate_visuals,
+            include_examples=request_data.include_examples,
+            include_prerequisites=request_data.include_prerequisites
+        )
+
+        # Cache the response
+        cache_service.set(
+            content=content[:1000],
+            level=request_data.level.value,
+            mode=request_data.mode.value,
+            data=explanation.dict()
         )
 
         return explanation

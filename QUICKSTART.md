@@ -49,14 +49,14 @@ cd frontend
 npm install
 
 # Start dev server
-npm run dev
+npm start
 ```
 
-✅ Frontend running at http://localhost:3000
+✅ Frontend running at http://localhost:4200
 
 ### 3️⃣ Test It Out (30 seconds)
 
-1. Open http://localhost:3000
+1. Open http://localhost:4200
 2. Click "Try Example" button
 3. See the explanation appear!
 
